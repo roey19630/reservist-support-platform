@@ -1,2 +1,3 @@
-# reservist-support-platform
-Initial repository for project. Code upload coming tomorrow.
+# Project Repository
+
+Code upload coming tomorrow.

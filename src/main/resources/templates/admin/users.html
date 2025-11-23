@@ -1,0 +1,386 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>ניהול משתמשים</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+      min-height: 100vh;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      padding: 2rem 0;
+      color: #495057;
+    }
+
+    .main-container {
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      border-radius: 12px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+      margin: 2rem auto;
+      max-width: 1200px;
+      border: 1px solid #ddd;
+    }
+
+    .main-container::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(135deg, #00cec9, #81ecec);
+    }
+
+    .page-title {
+      color: #2c3e50;
+      font-weight: 600;
+      margin-bottom: 2rem;
+      position: relative;
+      text-align: center;
+      font-size: 2rem;
+    }
+
+    .page-title::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 60px;
+      height: 2px;
+      background: linear-gradient(135deg, #00cec9, #81ecec);
+      border-radius: 1px;
+    }
+
+    .form-select, .form-control {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      transition: all 0.3s ease;
+      background: white;
+      color: #495057;
+    }
+
+    .form-select:focus, .form-control:focus {
+      border-color: #ddd;
+      box-shadow: 0 0 0 0.2rem rgba(108, 117, 125, 0.15);
+      background: white;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #00b894, #55efc4);
+      border: none;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-size: 1rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-primary:hover {
+      background: linear-gradient(135deg, #00b894, #55efc4);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 206, 201, 0.25);
+    }
+
+    .btn-primary:active {
+      transform: translateY(0);
+    }
+
+    .btn-primary::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.1), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-primary:hover::before {
+      left: 100%;
+    }
+
+    .table-container {
+      background: white;
+      border-radius: 12px;
+      padding: 1.5rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      margin: 2rem 0;
+      border: 1px solid #ddd;
+    }
+
+    .table {
+      margin-bottom: 0;
+    }
+
+    .table thead th {
+      background: linear-gradient(135deg, #74b9ff, #0984e3);
+      color: white;
+      border: none;
+      font-weight: 500;
+      padding: 1rem 0.75rem;
+      text-align: center;
+      position: relative;
+    }
+
+    .table thead th:first-child {
+      border-top-right-radius: 8px;
+    }
+
+    .table thead th:last-child {
+      border-top-left-radius: 8px;
+    }
+
+    .table tbody tr {
+      transition: all 0.3s ease;
+    }
+
+    .table tbody tr:hover {
+      background: rgba(108, 117, 125, 0.05);
+      transform: translateY(-1px);
+    }
+
+    .table tbody td {
+      padding: 1rem 0.75rem;
+      vertical-align: middle;
+      border: 1px solid #ddd;
+      color: #495057;
+    }
+
+    .btn-warning {
+      background: linear-gradient(135deg, #00b894, #55efc4);
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      margin-left: 0.5rem;
+      color: white;
+    }
+
+    .btn-warning:hover {
+      background: linear-gradient(135deg, #00a085, #4dd0a7);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(0, 184, 148, 0.3);
+      color: white;
+    }
+
+    .btn-danger {
+      background: linear-gradient(135deg, #ff6b6b, #ffeaa7);
+      border: none;
+      border-radius: 6px;
+      padding: 0.5rem 1rem;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      margin-left: 0.5rem;
+      color: white;
+    }
+
+    .btn-danger:hover {
+      background: linear-gradient(135deg, #fd79a8, #fdcb6e);
+      transform: translateY(-1px);
+      box-shadow: 0 3px 8px rgba(255, 107, 107, 0.3);
+      color: white;
+    }
+
+    .btn-outline-secondary {
+      border: 1px solid #00cec9;
+      border-radius: 8px;
+      padding: 0.75rem 1.5rem;
+      font-weight: 500;
+      transition: all 0.3s ease;
+      text-decoration: none;
+      color: #00cec9;
+    }
+
+    .btn-outline-secondary:hover {
+      background: #00cec9;
+      color: white;
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(0, 206, 201, 0.2);
+    }
+
+    .filter-section {
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      margin-bottom: 2rem;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      border: 1px solid #ddd;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    .main-container {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    .filter-section {
+      animation: fadeInUp 0.8s ease-out;
+    }
+
+    .table-container {
+      animation: fadeInUp 1s ease-out;
+    }
+
+    @media (max-width: 768px) {
+      .main-container {
+        padding: 2rem 1rem;
+        margin: 1rem;
+      }
+
+      .filter-section {
+        padding: 1.5rem;
+      }
+
+      .table-container {
+        padding: 1rem;
+        overflow-x: auto;
+      }
+
+      .table {
+        font-size: 0.9rem;
+      }
+
+      .btn-sm {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+      }
+    }
+
+    /* Additional professional styling */
+    .table tbody tr:nth-child(even) {
+      background-color: #e3f2fd;
+    }
+
+    .table tbody tr:nth-child(odd) {
+      background-color: #f1f8e9;
+    }
+
+    .table tbody tr:hover {
+      background-color: #fff9c4 !important;
+    }
+
+    .btn-sm {
+      padding: 0.4rem 0.8rem;
+      font-size: 0.85rem;
+      border-radius: 4px;
+    }
+
+    .form-control::placeholder {
+      color: #adb5bd;
+    }
+
+    .page-title i {
+      color: #6c757d;
+      margin-left: 0.5rem;
+    }
+  </style>
+</head>
+<body dir="rtl">
+<div class="container">
+  <div class="main-container">
+    <h2 class="page-title">👥 ניהול משתמשים</h2>
+
+    <div class="filter-section">
+      <form method="get" class="row">
+        <div class="col-md-3 mb-3">
+          <select class="form-select" name="role">
+            <option value="">-- כל התפקידים --</option>
+            <option th:each="r : ${T(com.milufamilies.supportapp.model.enums.Role).values()}"
+                    th:value="${r}" th:text="${r}"
+                    th:selected="${r == selectedRole}">
+            </option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-3">
+          <select class="form-select" name="approved">
+            <option value="">-- כל המשתמשים --</option>
+            <option value="true" th:selected="${selectedApproved == 'true'}">מאושרים</option>
+            <option value="false" th:selected="${selectedApproved == 'false'}">לא מאושרים</option>
+          </select>
+        </div>
+        <div class="col-md-3 mb-3">
+          <input type="text" class="form-control" name="keyword" placeholder="חיפוש לפי שם / אימייל" th:value="${keyword}" />
+        </div>
+        <div class="col-md-3 mb-3">
+          <button type="submit" class="btn btn-primary w-100">
+            <i class="fas fa-search me-2"></i>
+            סנן
+          </button>
+        </div>
+      </form>
+    </div>
+
+    <div class="table-container">
+      <table class="table table-bordered table-striped text-center">
+        <thead class="table-dark">
+        <tr>
+          <th>ID</th>
+          <th>תעודת זהות</th>
+          <th>שם מלא</th>
+          <th>אימייל</th>
+          <th>טלפון</th>
+          <th>תפקיד</th>
+          <th>Approved</th>
+          <th>פעולות</th>
+        </tr>
+        </thead>
+        <tbody>
+        <tr th:each="user : ${users}">
+          <td th:text="${user.id}"></td>
+          <td th:text="${user.idNumber}"></td>
+          <td th:text="${user.fullName}"></td>
+          <td th:text="${user.email}"></td>
+          <td th:text="${user.phone}"></td>
+          <td th:text="${user.role}"></td>
+          <td th:text="${user.approved ? 'כן' : 'לא'}"></td>
+          <td>
+            <a th:href="@{'/admin/users/edit/' + ${user.id}}" class="btn btn-warning btn-sm">
+              <i class="fas fa-edit me-1"></i>
+              ערוך
+            </a>
+            <form th:action="@{'/admin/users/delete/' + ${user.id}}" method="post" class="d-inline">
+              <button type="submit" class="btn btn-danger btn-sm" onclick="return confirm('האם אתה בטוח?')">
+                <i class="fas fa-trash me-1"></i>
+                מחק
+              </button>
+            </form>
+          </td>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="text-center mt-4">
+      <a href="/admin/home" class="btn btn-outline-secondary">
+        <i class="fas fa-arrow-right me-2"></i>
+        חזרה לדף הראשי
+      </a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

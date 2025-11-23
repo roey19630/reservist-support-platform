@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="he">
+<head>
+    <meta charset="UTF-8">
+    <title>ניהול בקשות עזרה</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body {
+            background: linear-gradient(135deg, #f1f3f4 0%, #e8eaf6 100%);
+            min-height: 100vh;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            padding: 2rem 0;
+            color: #37474f;
+        }
+
+        .main-container {
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            border-radius: 16px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+            margin: 2rem auto;
+            max-width: 1400px;
+            border: 1px solid #e1e8ed;
+        }
+
+        .main-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+        }
+
+        .page-title {
+            color: #e65100;
+            font-weight: 600;
+            margin-bottom: 2.5rem;
+            position: relative;
+            text-align: center;
+            font-size: 2.2rem;
+        }
+
+        .page-title::after {
+            content: '';
+            position: absolute;
+            bottom: -12px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 3px;
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            border-radius: 2px;
+        }
+
+        .page-title i {
+            color: #ff9800;
+            margin-left: 0.5rem;
+        }
+
+        .filter-container {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 15px;
+            padding: 2rem;
+            margin: 2rem 0;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            border: 1px solid #e8eaf6;
+        }
+
+        .filter-title {
+            color: #5d4037;
+            font-weight: 600;
+            margin-bottom: 1.5rem;
+            font-size: 1.3rem;
+        }
+
+        .filter-title i {
+            color: #ff9800;
+            margin-left: 0.5rem;
+        }
+
+        .form-select,
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e8eaf6;
+            padding: 0.8rem 1rem;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            background: white;
+        }
+
+        .form-select:focus,
+        .form-control:focus {
+            border-color: #ff9800;
+            box-shadow: 0 0 0 0.2rem rgba(255, 152, 0, 0.25);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #ff9800, #f57c00);
+            border: none;
+            border-radius: 10px;
+            padding: 0.8rem 1.5rem;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            color: white;
+        }
+
+        .btn-info:hover {
+            background: linear-gradient(135deg, #f57c00, #e65100);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(255, 152, 0, 0.4);
+            color: white;
+        }
+
+        .btn-info i {
+            margin-left: 0.5rem;
+        }
+
+        .table-container {
+            background: white;
+            border-radius: 15px;
+            padding: 2rem;
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.06);
+            margin: 2rem 0;
+            border: 1px solid #e8eaf6;
+            overflow-x: auto;
+        }
+
+        .table {
+            margin-bottom: 0;
+            font-size: 1rem;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, #5d4037, #6d4c41);
+            color: white;
+            border: none;
+            font-weight: 500;
+            padding: 1.2rem 1rem;
+            text-align: center;
+            position: relative;
+            font-size: 1.05rem;
+            white-space: nowrap;
+        }
+
+        .table thead th:first-child {
+            border-top-right-radius: 10px;
+        }
+
+        .table thead th:last-child {
+            border-top-left-radius: 10px;
+        }
+
+        .table tbody tr {
+            transition: all 0.3s ease;
+        }
+
+        .table tbody tr:hover {
+            background: rgba(255, 152, 0, 0.08);
+            transform: translateY(-1px);
+        }
+
+        .table tbody td {
+            padding: 1.2rem 1rem;
+            vertical-align: middle;
+            border: 1px solid #e8eaf6;
+            color: #37474f;
+            text-align: center;
+        }
+
+        .table tbody tr:nth-child(even) {
+            background-color: #fafafa;
+        }
+
+        .table tbody tr:nth-child(odd) {
+            background-color: white;
+        }
+
+        .table tbody tr:hover {
+            background-color: #fff3e0 !important;
+        }
+
+        .btn-outline-secondary {
+            border: 2px solid #ff9800;
+            border-radius: 10px;
+            padding: 0.8rem 1.8rem;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            color: #ff9800;
+            font-size: 1rem;
+        }
+
+        .btn-outline-secondary:hover {
+            background: #ff9800;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(255, 152, 0, 0.3);
+        }
+
+        .btn-outline-secondary i {
+            margin-left: 0.5rem;
+        }
+
+        .status-badge {
+            padding: 0.4rem 0.8rem;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .status-active {
+            background: linear-gradient(135deg, #4caf50, #66bb6a);
+            color: white;
+        }
+
+        .status-pending {
+            background: linear-gradient(135deg, #ff9800, #ffb74d);
+            color: white;
+        }
+
+        .status-completed {
+            background: linear-gradient(135deg, #2196f3, #42a5f5);
+            color: white;
+        }
+
+        .tag-item {
+            display: inline-block;
+            background: linear-gradient(135deg, #e8eaf6, #c5cae9);
+            color: #3f51b5;
+            padding: 0.3rem 0.6rem;
+            border-radius: 12px;
+            font-size: 0.8rem;
+            margin: 0.1rem;
+            font-weight: 500;
+        }
+
+        @keyframes fadeInUp {
+            from {
+                opacity: 0;
+                transform: translateY(25px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .main-container {
+            animation: fadeInUp 0.7s ease-out;
+        }
+
+        .filter-container {
+            animation: fadeInUp 0.8s ease-out;
+        }
+
+        .table-container {
+            animation: fadeInUp 0.9s ease-out;
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                padding: 2rem 1rem;
+                margin: 1rem;
+            }
+
+            .filter-container {
+                padding: 1.5rem;
+            }
+
+            .table-container {
+                padding: 1rem;
+            }
+
+            .table {
+                font-size: 0.9rem;
+            }
+
+            .table thead th {
+                padding: 1rem 0.7rem;
+                font-size: 0.95rem;
+            }
+
+            .table tbody td {
+                padding: 1rem 0.7rem;
+            }
+
+            .page-title {
+                font-size: 1.8rem;
+            }
+
+            .filter-title {
+                font-size: 1.1rem;
+            }
+        }
+
+        @media (max-width: 576px) {
+            .col-md-3 {
+                margin-bottom: 1rem;
+            }
+        }
+    </style>
+</head>
+<body dir="rtl">
+<div class="container mt-5">
+    <div class="main-container">
+        <h2 class="page-title">
+            <i class="fas fa-hands-helping"></i>
+            ניהול בקשות לעזרה
+        </h2>
+
+        <!-- טופס סינון -->
+        <div class="filter-container">
+            <h4 class="filter-title">
+                <i class="fas fa-filter"></i>
+                סינון וחיפוש
+            </h4>
+            <form method="get" class="row">
+                <div class="col-md-3">
+                    <select class="form-select" name="helpType">
+                        <option value="">-- כל הסוגים --</option>
+                        <option th:each="t : ${helpTypes}" th:value="${t.name()}" th:text="${t.hebrew}" th:selected="${t == selectedHelpType}"></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <select class="form-select" name="status">
+                        <option value="">-- כל הסטטוסים --</option>
+                        <option th:each="s : ${statuses}" th:value="${s.name()}" th:text="${s}" th:selected="${s == selectedStatus}"></option>
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <input type="text" name="keyword" class="form-control" placeholder="חיפוש לפי תיאור" th:value="${keyword}">
+                </div>
+                <div class="col-md-3">
+                    <button class="btn btn-info w-100">
+                        <i class="fas fa-search"></i>
+                        סנן
+                    </button>
+                </div>
+            </form>
+        </div>
+
+        <!-- טבלה -->
+        <div class="table-container">
+            <table class="table table-striped align-middle">
+                <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>משפחה</th>
+                    <th>סוג עזרה</th>
+                    <th>אזור</th>
+                    <th>ימים</th>
+                    <th>שעות</th>
+                    <th>תיאור</th>
+                    <th>סטטוס</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="need : ${needs}">
+                    <td th:text="${need.id}"></td>
+                    <td th:text="${need.user.fullName}"></td>
+                    <td th:text="${need.helpType.hebrew}"></td>
+                    <td>
+                        <span th:each="r, stat : ${need.regions}">
+                            <span class="tag-item" th:text="${r.hebrew}"></span>
+                        </span>
+                    </td>
+                    <td>
+                        <span th:each="d, stat : ${need.daysAvailable}">
+                            <span class="tag-item" th:text="${d.hebrew}"></span>
+                        </span>
+                    </td>
+                    <td>
+                        <span th:each="t, stat : ${need.timeSlots}">
+                            <span class="tag-item" th:text="${t.hebrew}"></span>
+                        </span>
+                    </td>
+                    <td th:text="${need.description}"></td>
+                    <td>
+                        <span class="status-badge status-pending" th:text="${need.status}"></span>
+                    </td>
+                </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="/admin/home" class="btn btn-outline-secondary">
+                <i class="fas fa-arrow-right"></i>
+                חזרה לדף הראשי
+            </a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

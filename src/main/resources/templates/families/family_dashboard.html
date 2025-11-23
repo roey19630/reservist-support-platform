@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org" lang="he">
+<head>
+  <meta charset="UTF-8">
+  <title>דף הבית - משפחה</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.rtl.min.css" rel="stylesheet">
+</head>
+<body dir="rtl">
+
+<nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+  <div class="container-fluid">
+    <a class="navbar-brand fw-bold text-white" href="#">מערכת הסיוע - משפחות</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+            aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="navbarNav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link active" href="/family/dashboard">דף הבית</a></li>
+        <li class="nav-item"><a class="nav-link" href="/needs/new">בקשה חדשה</a></li>
+        <li class="nav-item"><a class="nav-link" href="/match/offers">רשימת מתנדבים</a></li>
+        <li class="nav-item">
+          <a class="nav-link d-flex align-items-center gap-1" href="/family/matches">
+            התאמות ממתינות
+            <span class="badge bg-danger" th:text="${pendingMatchCount}" th:if="${pendingMatchCount > 0}">0</span>
+          </a>
+        </li>
+        <li class="nav-item"><a class="nav-link" href="/chat/list">שיחות</a></li>
+        <li class="nav-item"><a class="nav-link" href="/logout">התנתקות</a></li>
+      </ul>
+      <span class="navbar-text text-white">שלום, <span th:text="${user.fullName}">משתמש</span> 👋</span>
+    </div>
+  </div>
+</nav>
+
+<!-- 👋 ברכה -->
+<div class="container mt-5 text-center">
+  <h2 class="fw-bold">שלום, <span th:text="${user.fullName}">משתמש</span>! 👋</h2>
+  <p class="text-muted">ברוכים הבאים למערכת התמיכה במשפחות חיילי מילואים 💙</p>
+  <p>כאן תוכלו לבקש עזרה, לצפות במתנדבים, להתכתב ולנהל את בקשותיכם.</p>
+</div>
+
+<!-- 🔘 כפתורים -->
+<div class="container text-center my-4">
+  <a href="/needs/new" class="btn btn-success btn-lg mx-2">📋 בקשה חדשה</a>
+  <a href="/match/offers" class="btn btn-outline-primary btn-lg mx-2">👥 רשימת מתנדבים</a>
+</div>
+
+<!-- 📋 טבלת בקשות -->
+<div class="container">
+  <div class="card shadow-sm">
+    <div class="card-body">
+      <h5 class="card-title mb-3">הבקשות שפתחת</h5>
+      <div th:if="${#lists.isEmpty(needs)}" class="alert alert-info text-center">
+        לא פתחת בקשות עדיין.
+      </div>
+      <div class="table-responsive" th:if="${!#lists.isEmpty(needs)}">
+        <table class="table table-striped table-hover text-center">
+          <thead class="table-dark">
+          <tr>
+            <th>סוג עזרה</th>
+            <th>אזור</th>
+            <th>תיאור</th>
+            <th>יום</th>
+            <th>שעה</th>
+          </tr>
+          </thead>
+          <tbody>
+          <tr th:each="need : ${needs}">
+            <td th:text="${need.helpType.hebrew}">עזרה</td>
+
+            <!-- אזורים -->
+            <td>
+              <span th:each="r, stat : ${need.regions}">
+                <span th:text="${r.hebrew}">אזור</span><span th:if="${!stat.last}">, </span>
+              </span>
+            </td>
+
+            <td th:text="${need.description}">תיאור</td>
+
+            <!-- ימים -->
+            <td>
+              <span th:each="d, stat : ${need.daysAvailable}">
+                <span th:text="${d.hebrew}">יום</span><span th:if="${!stat.last}">, </span>
+              </span>
+            </td>
+
+            <!-- שעות -->
+            <td>
+              <span th:each="t, stat : ${need.timeSlots}">
+                <span th:text="${t.hebrew}">שעה</span><span th:if="${!stat.last}">, </span>
+              </span>
+            </td>
+
+          </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>
+
+</body>
+</html>
